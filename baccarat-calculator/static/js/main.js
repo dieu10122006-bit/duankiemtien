@@ -476,8 +476,100 @@ function renderLiveStats() {
     resultCard("Cầu hiện tại", streakSide ? `${streakLen} ${streakSide === "Banker" ? "Banker" : "Player"}` : "—", "", streakSide ? streakSide.toLowerCase() : "");
 }
 
+function getPredictionInsight(entries) {
+  const baseline = { Player: 0.4463, Banker: 0.4586, Tie: 0.0951 };
+  const scores = { ...baseline };
+  if (!entries.length) {
+    return {
+      result: "Banker",
+      probability: baseline.Banker,
+      reason: "Mặc định theo xác suất chuẩn của baccarat: Banker vẫn là lựa chọn có lợi thế nhất."
+    };
+  }
+
+  const recent = entries.slice(-8);
+  const recentCounts = { Player: 0, Banker: 0, Tie: 0 };
+  recent.forEach(e => recentCounts[e.result]++);
+  const last = recent[recent.length - 1];
+
+  // ưu tiên xu hướng gần đây
+  if (last) {
+    const prev = recent[recent.length - 2];
+    if (prev && prev.result === last.result) {
+      scores[last.result] += 0.07;
+    } else {
+      scores[last.result] += 0.03;
+    }
+  }
+
+  // nếu 3 ván gần nhất giống nhau thì tiếp tục xu hướng đó
+  if (recent.length >= 3) {
+    const tail = recent.slice(-3).map(e => e.result);
+    if (tail[0] === tail[1] && tail[1] === tail[2]) {
+      scores[tail[0]] += 0.08;
+    } else if (tail[0] !== tail[1] && tail[1] !== tail[2] && tail[0] !== tail[2]) {
+      scores[tail[tail.length - 1]] += 0.04;
+    }
+  }
+
+  // nếu tie xuất hiện nhiều thì tăng trọng số tie nhẹ
+  const tieShare = recentCounts.Tie / recent.length;
+  if (tieShare >= 0.25) {
+    scores.Tie += 0.05;
+  } else if (tieShare >= 0.15) {
+    scores.Tie += 0.03;
+  }
+
+  // tăng thêm nếu đang có chuỗi liên tiếp cùng một bên
+  let streakSide = null;
+  let streakLen = 0;
+  for (let i = recent.length - 1; i >= 0; i--) {
+    const r = recent[i].result;
+    if (r === "Tie") break;
+    if (streakSide === null) { streakSide = r; streakLen = 1; }
+    else if (r === streakSide) { streakLen++; }
+    else break;
+  }
+  if (streakLen >= 2 && streakSide) {
+    scores[streakSide] += 0.06 * Math.min(streakLen, 3);
+  }
+
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  const probs = {
+    Player: scores.Player / total,
+    Banker: scores.Banker / total,
+    Tie: scores.Tie / total,
+  };
+
+  const ranked = Object.entries(probs).sort((a, b) => b[1] - a[1]);
+  const [result, probability] = ranked[0];
+
+  let reason = `Dựa theo ${recent.length} ván gần nhất và xác suất chuẩn, ${result} đang có ưu thế.`;
+  if (streakLen >= 2 && streakSide) {
+    reason += ` Hiện có chuỗi ${streakLen} ván ${streakSide} liên tiếp.`;
+  }
+  if (recentCounts.Tie >= 2) {
+    reason += ` Tie xuất hiện khá thường xuyên, nên cần giữ mắt đến cú bật tie.`;
+  }
+
+  return { result, probability, reason };
+}
+
+function renderPrediction() {
+  const prediction = getPredictionInsight(liveEntries);
+  const label = prediction.result === "Banker" ? "Banker" : prediction.result === "Player" ? "Player" : "Tie";
+  const confidence = pct(prediction.probability);
+  document.getElementById("live-prediction").innerHTML = `
+    <div class="prediction-pill ${prediction.result.toLowerCase()}">${label}</div>
+    <div class="prediction-text">
+      <strong>${confidence}</strong> khả năng xảy ra cho ván tiếp theo.<br>
+      ${prediction.reason}
+    </div>`;
+}
+
 function renderLiveAll() {
   renderLiveStats();
+  renderPrediction();
   const bigRoadCols = buildBigRoadFromEntries(liveEntries, 6);
   document.getElementById("live-bead").innerHTML = renderBeadGridSVG(liveEntries, 22);
   document.getElementById("live-bigroad").innerHTML = renderBigRoadFromCols(bigRoadCols, 24);
@@ -500,6 +592,7 @@ document.getElementById("live-add-banker").addEventListener("click", () => addLi
 document.getElementById("live-add-tie").addEventListener("click", () => addLiveEntry("Tie"));
 document.getElementById("live-undo").addEventListener("click", () => { liveEntries.pop(); renderLiveAll(); });
 document.getElementById("live-reset").addEventListener("click", () => { liveEntries = []; renderLiveAll(); });
+document.getElementById("live-predict").addEventListener("click", () => renderPrediction());
 
 renderLiveAll();
 

@@ -324,6 +324,37 @@ canvas#bankroll-chart {
 
 /* ---------------- LIVE TRACKER ---------------- */
 .live-input-row { align-items: center; }
+.live-predict-row { align-items: center; justify-content: space-between; }
+
+.prediction-box {
+  flex: 1;
+  min-height: 3.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  color: var(--ivory);
+  font-family: var(--font-body);
+}
+.prediction-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 6rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ivory);
+}
+.prediction-pill.player { background: var(--player); }
+.prediction-pill.banker { background: var(--banker); }
+.prediction-pill.tie { background: var(--tie); }
+.prediction-text strong { color: var(--brass-soft); }
 
 .pair-toggle {
   display: flex;
