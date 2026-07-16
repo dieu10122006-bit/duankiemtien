@@ -1,0 +1,392 @@
+/* ============ DESIGN TOKENS ============
+   Felt      #0B3D2E   deep casino felt (page background)
+   Felt-deep #082A20   shadow / recessed panels
+   Brass     #C9A227   accent, borders, active states
+   Ivory     #EDE6D6   scorecard / card surfaces
+   Banker    #A63A34   muted oxblood red (Banker marker)
+   Player    #2E5C8A   muted marine blue (Player marker)
+   Tie       #3F8F5D   muted green (Tie marker)
+   Ink       #1B1B18   primary text on ivory
+   ================================================= */
+
+:root {
+  --felt: #0B3D2E;
+  --felt-deep: #082A20;
+  --brass: #C9A227;
+  --brass-soft: #d9bd6a;
+  --ivory: #EDE6D6;
+  --ivory-dim: #E1D8C3;
+  --banker: #A63A34;
+  --player: #2E5C8A;
+  --tie: #3F8F5D;
+  --ink: #1B1B18;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--felt);
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(255,255,255,0.04), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(0,0,0,0.25), transparent 45%);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.table-felt {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ---------------- HERO ---------------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(201,162,39,0.35);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-soft);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3.1rem;
+  line-height: 1.02;
+  margin: 0.4rem 0 1rem;
+  color: var(--ivory);
+}
+h1 em {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--brass-soft);
+}
+
+.hero-copy {
+  color: rgba(237,230,214,0.78);
+  font-size: 1rem;
+  max-width: 46ch;
+}
+
+.hero-bead {
+  background: var(--felt-deep);
+  border: 1px solid rgba(201,162,39,0.4);
+  border-radius: 4px;
+  padding: 0.75rem;
+  min-height: 180px;
+}
+
+/* ---------------- PIT SELECTOR (tabs) ---------------- */
+.pit-selector {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+  margin: 2rem 0 1.5rem;
+}
+
+.pit-btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: rgba(237,230,214,0.7);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 3px;
+  padding: 0.8rem 0.6rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+.pit-btn .pit-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--brass-soft);
+  margin-bottom: 0.25rem;
+}
+.pit-btn:hover {
+  border-color: var(--brass);
+  color: var(--ivory);
+}
+.pit-btn.active {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: var(--felt-deep);
+}
+.pit-btn.active .pit-num { color: var(--felt-deep); }
+
+/* ---------------- PANELS ---------------- */
+.panel { display: none; animation: fade-in 0.25s ease; }
+.panel.active { display: block; }
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px);} to { opacity:1; transform: translateY(0);} }
+
+.panel-head h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--brass-soft);
+}
+.panel-head p {
+  color: rgba(237,230,214,0.75);
+  max-width: 70ch;
+  margin-top: 0;
+}
+
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  align-items: flex-end;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+}
+
+.controls-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: rgba(237,230,214,0.7);
+  font-family: var(--font-mono);
+}
+
+select, input[type=number] {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--ivory);
+  color: var(--ink);
+  border: 1px solid var(--felt-deep);
+  border-radius: 3px;
+  min-width: 9rem;
+}
+
+.btn-primary, .btn-secondary {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.3rem;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  height: 2.6rem;
+}
+.btn-primary {
+  background: var(--brass);
+  color: var(--felt-deep);
+}
+.btn-primary:hover { background: var(--brass-soft); }
+.btn-secondary {
+  background: transparent;
+  border-color: var(--brass);
+  color: var(--brass-soft);
+}
+.btn-secondary:hover { background: rgba(201,162,39,0.12); }
+
+.hint { font-size: 0.85rem; color: rgba(237,230,214,0.6); }
+
+/* ---------------- RESULT CARDS ---------------- */
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+}
+
+.result-card {
+  background: var(--ivory);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 1rem 1.1rem;
+  border-left: 5px solid var(--brass);
+}
+.result-card.banker { border-left-color: var(--banker); }
+.result-card.player { border-left-color: var(--player); }
+.result-card.tie { border-left-color: var(--tie); }
+
+.result-card .label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b6656;
+}
+.result-card .value {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin: 0.15rem 0;
+}
+.result-card .sub {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #6b6656;
+}
+
+/* ---------------- RANK GRID (shoe engine) ---------------- */
+.rank-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.5rem;
+  margin: 0.8rem 0 1.4rem;
+}
+.rank-cell {
+  background: var(--ivory);
+  border-radius: 3px;
+  padding: 0.5rem 0.3rem;
+  text-align: center;
+}
+.rank-cell .rank-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #6b6656;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.rank-cell input {
+  width: 100%;
+  min-width: unset;
+  padding: 0.3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+/* ---------------- BEAD ROAD ---------------- */
+.bead-wrap { margin-top: 1.8rem; }
+.bead-wrap h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--brass-soft);
+  margin-bottom: 0.6rem;
+}
+.bead-road, .hero-bead svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------------- MISC ---------------- */
+.status-line {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--brass-soft);
+  min-height: 1.2rem;
+}
+
+.risk-box {
+  background: var(--ivory);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  display: none;
+}
+.risk-box.show { display: block; }
+
+canvas#bankroll-chart {
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 4px;
+  margin-top: 1rem;
+  padding: 0.6rem;
+}
+
+.foot-note {
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(201,162,39,0.25);
+  font-size: 0.78rem;
+  color: rgba(237,230,214,0.5);
+  max-width: 70ch;
+}
+
+/* ---------------- LIVE TRACKER ---------------- */
+.live-input-row { align-items: center; }
+
+.pair-toggle {
+  display: flex;
+  gap: 0.7rem;
+  margin-right: 0.4rem;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: rgba(237,230,214,0.75);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 3px;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+}
+.chip input { width: auto; min-width: unset; }
+
+.btn-result {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  padding: 0.65rem 1.4rem;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  color: var(--ivory);
+}
+.btn-result.player { background: var(--player); }
+.btn-result.banker { background: var(--banker); }
+.btn-result.tie { background: var(--tie); }
+.btn-result:hover { filter: brightness(1.12); }
+.btn-result:active { transform: translateY(1px); }
+
+.derived-roads {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-top: 1.4rem;
+}
+.small-road-wrap .bead-road { min-height: 60px; }
+
+.disclaimer { margin-top: 1.4rem; max-width: 75ch; }
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; }
+  h1 { font-size: 2.3rem; }
+  .pit-selector { grid-template-columns: repeat(2, 1fr); }
+  .rank-grid { grid-template-columns: repeat(5, 1fr); }
+  .derived-roads { grid-template-columns: 1fr; }
+}
+
+/* focus visibility */
+button:focus-visible, select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--brass-soft);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+}

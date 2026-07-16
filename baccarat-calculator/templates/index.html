@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bàn Tính Baccarat — Phòng Xác Suất</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="table-felt">
+
+  <header class="hero">
+    <div class="hero-plaque">
+      <span class="eyebrow">Phòng phân tích · Punto Banco</span>
+      <h1>Bàn Tính<br><em>Baccarat</em></h1>
+      <p class="hero-copy">Bốn bộ máy tính toán độc lập — enumerate chính xác, mô phỏng Monte Carlo,
+      xác suất có điều kiện theo con bài còn lại, và phòng thử hệ thống cược —
+      cùng chia sẻ một bộ luật rút bài Punto Banco chuẩn.</p>
+    </div>
+    <div class="hero-bead" id="hero-bead" aria-label="Bảng cầu (bead road) minh hoạ"></div>
+  </header>
+
+  <nav class="pit-selector" id="pit-selector">
+    <button class="pit-btn active" data-panel="panel-exact">
+      <span class="pit-num">Bộ 1</span>Exact Engine
+    </button>
+    <button class="pit-btn" data-panel="panel-shoe">
+      <span class="pit-num">Bộ 2</span>Shoe / Đếm bài
+    </button>
+    <button class="pit-btn" data-panel="panel-mc">
+      <span class="pit-num">Bộ 3</span>Monte Carlo
+    </button>
+    <button class="pit-btn" data-panel="panel-bet">
+      <span class="pit-num">Bộ 4</span>Chiến lược cược
+    </button>
+    <button class="pit-btn" data-panel="panel-live">
+      <span class="pit-num">Bộ 5</span>Bàn Live
+    </button>
+  </nav>
+
+  <main>
+
+    <!-- ================= PANEL 1: EXACT ENGINE ================= -->
+    <section class="panel active" id="panel-exact">
+      <div class="panel-head">
+        <h2>Bộ máy Enumerate Chính Xác</h2>
+        <p>Liệt kê đầy đủ mọi tổ hợp lá bài có thể xảy ra theo mô hình siêu bội
+        (hypergeometric), áp dụng đúng bảng luật rút lá thứ 3 — không xấp xỉ, không mô phỏng.</p>
+      </div>
+      <div class="controls-row">
+        <label>Số bộ bài trong shoe
+          <select id="exact-decks">
+            <option value="1">1 bộ</option>
+            <option value="2">2 bộ</option>
+            <option value="4">4 bộ</option>
+            <option value="6">6 bộ</option>
+            <option value="8" selected>8 bộ (chuẩn casino)</option>
+          </select>
+        </label>
+        <button class="btn-primary" id="exact-run">Tính chính xác</button>
+      </div>
+      <div class="result-grid" id="exact-results"></div>
+      <div class="bead-wrap">
+        <h3>Bảng cầu tỉ lệ (theo xác suất chính xác)</h3>
+        <div class="bead-road" id="exact-bead"></div>
+      </div>
+    </section>
+
+    <!-- ================= PANEL 2: SHOE / CARD COUNTING ================= -->
+    <section class="panel" id="panel-shoe">
+      <div class="panel-head">
+        <h2>Bộ máy Xác Suất Theo Con Bài Còn Lại</h2>
+        <p>Nhập số lá đã bị rút khỏi shoe (theo dõi từ các ván trước) — bộ máy tính lại
+        xác suất Player / Banker / Tie <em>có điều kiện</em> trên phần bài còn lại.</p>
+      </div>
+      <div class="controls-row">
+        <label>Số bộ bài ban đầu
+          <select id="shoe-decks">
+            <option value="1">1 bộ</option>
+            <option value="2">2 bộ</option>
+            <option value="4">4 bộ</option>
+            <option value="6">6 bộ</option>
+            <option value="8" selected>8 bộ</option>
+          </select>
+        </label>
+        <button class="btn-secondary" id="shoe-reset">Đặt lại về 0</button>
+        <button class="btn-primary" id="shoe-run">Tính xác suất còn lại</button>
+      </div>
+      <p class="hint">Số lá <strong>đã rút</strong> cho mỗi giá trị điểm (0 = 10/J/Q/K):</p>
+      <div class="rank-grid" id="shoe-rank-grid"></div>
+      <div class="result-grid" id="shoe-results"></div>
+    </section>
+
+    <!-- ================= PANEL 3: MONTE CARLO ================= -->
+    <section class="panel" id="panel-mc">
+      <div class="panel-head">
+        <h2>Bộ máy Mô Phỏng Monte Carlo</h2>
+        <p>Xây shoe thật, xáo bài, chơi hàng trăm nghìn ván theo đúng luật — dùng để
+        kiểm chứng chéo với bộ máy Exact và ước lượng khoảng tin cậy 95%.</p>
+      </div>
+      <div class="controls-row">
+        <label>Số bộ bài
+          <select id="mc-decks">
+            <option value="1">1 bộ</option>
+            <option value="2">2 bộ</option>
+            <option value="6">6 bộ</option>
+            <option value="8" selected>8 bộ</option>
+          </select>
+        </label>
+        <label>Số ván mô phỏng
+          <select id="mc-hands">
+            <option value="10000">10,000</option>
+            <option value="100000" selected>100,000</option>
+            <option value="500000">500,000</option>
+            <option value="1000000">1,000,000</option>
+          </select>
+        </label>
+        <button class="btn-primary" id="mc-run">Chạy mô phỏng</button>
+      </div>
+      <div id="mc-status" class="status-line"></div>
+      <div class="result-grid" id="mc-results"></div>
+    </section>
+
+    <!-- ================= PANEL 4: BETTING STRATEGY ================= -->
+    <section class="panel" id="panel-bet">
+      <div class="panel-head">
+        <h2>Phòng Thử Chiến Lược Cược</h2>
+        <p>Mô phỏng các hệ thống quản lý vốn (Martingale, Fibonacci, D'Alembert, Paroli, Flat)
+        trên xác suất thật của trò chơi — minh hoạ bằng số liệu rằng không hệ thống nào
+        thay đổi được lợi thế nhà cái về lâu dài.</p>
+      </div>
+      <div class="controls-row">
+        <label>Chiến lược
+          <select id="bet-strategy">
+            <option value="flat">Flat (cược đều)</option>
+            <option value="martingale">Martingale</option>
+            <option value="fibonacci">Fibonacci</option>
+            <option value="dalembert">D'Alembert</option>
+            <option value="paroli">Paroli</option>
+          </select>
+        </label>
+        <label>Cược vào
+          <select id="bet-on">
+            <option value="Banker">Banker</option>
+            <option value="Player">Player</option>
+            <option value="Tie">Tie</option>
+          </select>
+        </label>
+        <label>Vốn cược cơ bản
+          <input type="number" id="bet-base" value="10" min="1">
+        </label>
+        <label>Vốn khởi điểm
+          <input type="number" id="bet-bankroll" value="1000" min="10">
+        </label>
+        <label>Số ván / lượt chơi
+          <input type="number" id="bet-hands" value="200" min="10" max="5000">
+        </label>
+      </div>
+      <div class="controls-row">
+        <button class="btn-primary" id="bet-run">Mô phỏng 1 lượt</button>
+        <button class="btn-secondary" id="risk-run">Ước lượng nguy cơ cháy vốn (300 lượt)</button>
+      </div>
+      <div id="bet-summary" class="result-grid"></div>
+      <canvas id="bankroll-chart" height="90"></canvas>
+      <div id="risk-summary" class="risk-box"></div>
+    </section>
+
+    <!-- ================= PANEL 5: LIVE TRACKER ================= -->
+    <section class="panel" id="panel-live">
+      <div class="panel-head">
+        <h2>Bàn Live — Nhập Kết Quả Thực Tế</h2>
+        <p>Bấm để nhập từng ván vừa ra ở bàn thật. App tự vẽ lại <strong>Bead Road</strong>,
+        <strong>Big Road</strong> và 3 lộ phái sinh <strong>Big Eye Boy / Small Road / Cockroach Road</strong>
+        đúng thuật toán nhà cái dùng — cùng bảng thống kê tổng hợp.</p>
+      </div>
+
+      <div class="controls-row live-input-row">
+        <div class="pair-toggle">
+          <label class="chip"><input type="checkbox" id="live-pp"> Player Pair</label>
+          <label class="chip"><input type="checkbox" id="live-bp"> Banker Pair</label>
+        </div>
+        <button class="btn-result player" id="live-add-player">PLAYER</button>
+        <button class="btn-result tie" id="live-add-tie">TIE</button>
+        <button class="btn-result banker" id="live-add-banker">BANKER</button>
+        <button class="btn-secondary" id="live-undo">↺ Hoàn tác</button>
+        <button class="btn-secondary" id="live-reset">Xoá hết</button>
+      </div>
+
+      <div class="result-grid" id="live-stats"></div>
+
+      <div class="bead-wrap">
+        <h3>Bead Road (theo đúng thứ tự ván)</h3>
+        <div class="bead-road" id="live-bead"></div>
+      </div>
+
+      <div class="bead-wrap">
+        <h3>Big Road</h3>
+        <div class="bead-road" id="live-bigroad"></div>
+      </div>
+
+      <div class="derived-roads">
+        <div class="bead-wrap small-road-wrap">
+          <h3>Big Eye Boy (Nhãn Cầu)</h3>
+          <div class="bead-road" id="live-bigeye"></div>
+        </div>
+        <div class="bead-wrap small-road-wrap">
+          <h3>Small Road (Tiểu Lộ)</h3>
+          <div class="bead-road" id="live-smallroad"></div>
+        </div>
+        <div class="bead-wrap small-road-wrap">
+          <h3>Cockroach Road (Gián Lộ)</h3>
+          <div class="bead-road" id="live-cockroach"></div>
+        </div>
+      </div>
+
+      <p class="hint disclaimer">Lưu ý: Big Eye Boy / Small Road / Cockroach Road chỉ đọc lại <em>hình dạng</em>
+      của Big Road — mỗi ván bài vẫn độc lập hoàn toàn về xác suất (không có “cầu” nào dự đoán được
+      ván tiếp theo). Các lộ này mang tính tham khảo/hiển thị giống bàn thật, không phải công cụ dự đoán.</p>
+    </section>
+
+  </main>
+
+  <footer class="foot-note">
+    Công cụ mang tính thống kê / giáo dục. Xác suất thể hiện lợi thế nhà cái luôn dương
+    (house edge) — không có hệ thống cược nào đảo ngược được điều này về dài hạn.
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
